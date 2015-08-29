@@ -44,3 +44,4 @@ Temporary Items
 
 results/*
 __pycache__/*
+.vagrant/*

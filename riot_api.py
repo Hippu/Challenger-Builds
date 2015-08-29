@@ -10,7 +10,7 @@ riot_api.params.update({"api_key": API_KEY})
 
 beginTime = int((
     datetime.utcfromtimestamp(
-        time.time()) - timedelta(days=7)).timestamp()) * 1000
+        time.time()) - timedelta(days=1)).timestamp()) * 1000
 
 endTime = int(time.time()) * 1000
 

@@ -5,6 +5,15 @@ import os
 from pathlib import Path
 
 
+def rounded(num):
+    if num < 1.1:
+        return 1
+    elif num < 2:
+        return 2
+    else:
+        return int(num)
+
+
 class ItemSetBuilder:
 
     __analyzer = None
@@ -21,7 +30,7 @@ class ItemSetBuilder:
             if item["percentage"] > 50:
                 items.append({
                     "id": str(item["item_id"]),
-                    "count": int(item["avg_count"])
+                    "count": rounded(item["avg_count"])
                 })
         return items
 
@@ -33,13 +42,15 @@ class ItemSetBuilder:
                 if item["percentage"] > 3:
                     items.append({
                         "id": str(item["item_id"]),
-                        "count": int(item["avg_count"])
+                        "count": rounded(item["avg_count"])
                     })
         return items
 
     def generate(self):
         d = {
-            "title": "CB for " + self.__analyzer.championKey,
+            "title": "CB for {0} ({1} games)".format(
+                self.__analyzer.championKey,
+                self.__analyzer.gameCount),
             "type": "custom",
             "map": "SR",
             "mode": "CLASSIC",
@@ -55,6 +66,10 @@ class ItemSetBuilder:
                 {
                     "type": "Defensive items",
                     "items": self.items(self.__analyzer.defensive_items)
+                },
+                {
+                    "type": "Other items",
+                    "items": self.items(self.__analyzer.other_items)
                 },
                 {
                     "type": "Consumables",

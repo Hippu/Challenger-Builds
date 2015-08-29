@@ -141,6 +141,19 @@ class BuildAnalyzer:
         return items
 
     @property
+    def other_items(self):
+        if "other" in self.__cache:
+            return self.__cache["other"]
+
+        other = [item for item in self.items if item not in
+                 (self.offensive_items
+                  + self.defensive_items
+                  + self.consumables)]
+
+        self.__cache.update({"other": other})
+        return other
+
+    @property
     def consumables(self):
         if "consumables" in self.__cache:
             return self.__cache["consumables"]
@@ -157,4 +170,4 @@ if __name__ == '__main__':
     b = BuildAnalyzer("Azir")
     # print(b.starting_items)
     # print(b.offensive_items)
-    print(b.consumables)
+    print(b.other_items)
