@@ -2,7 +2,17 @@ from analyze import BuildAnalyzer
 from data import champion_keys
 import json
 import os
+import zipfile
 from pathlib import Path
+
+
+def rounded(num):
+    if num < 1.1:
+        return 1
+    elif num < 2:
+        return 2
+    else:
+        return int(num)
 
 
 class ItemSetBuilder:
@@ -21,7 +31,7 @@ class ItemSetBuilder:
             if item["percentage"] > 50:
                 items.append({
                     "id": str(item["item_id"]),
-                    "count": int(item["avg_count"])
+                    "count": rounded(item["avg_count"])
                 })
         return items
 
@@ -33,7 +43,7 @@ class ItemSetBuilder:
                 if item["percentage"] > 3:
                     items.append({
                         "id": str(item["item_id"]),
-                        "count": int(item["avg_count"])
+                        "count": rounded(item["avg_count"])
                     })
         return items
 
@@ -55,6 +65,10 @@ class ItemSetBuilder:
                 {
                     "type": "Defensive items",
                     "items": self.items(self.__analyzer.defensive_items)
+                },
+                {
+                    "type": "Other items",
+                    "items": self.items(self.__analyzer.other_items)
                 },
                 {
                     "type": "Consumables",
@@ -82,5 +96,16 @@ def create_files():
                 f,
                 indent=2)
 
+
+def create_zipfile():
+    zf = zipfile.ZipFile('result.zip', mode='w', compression=zipfile.ZIP_LZMA)
+    for key in champion_keys():
+        fname = key + "/Recommended/" + key + ".json"
+        j = json.dumps(
+            ItemSetBuilder(BuildAnalyzer(key)).generate(),
+            indent=2)
+        zf.writestr(fname, j)
+    zf.close()
+
 if __name__ == "__main__":
-    create_files()
+    create_zipfile()

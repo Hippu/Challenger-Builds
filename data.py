@@ -183,6 +183,13 @@ def create_db_from_cache():
     Base.metadata.create_all(engine)
     match_loader(matches)
 
+def create_db_from_scratch():
+    challenger_ids = riot_api.get_challenger_summoner_ids()
+    match_ids = riot_api.get_match_ids_from_challenger(challenger_ids)
+    matches = riot_api.get_matches(match_ids)
+    Base.metadata.create_all(engine)
+    match_loader(matches)
+
 if __name__ == "__main__":
-    create_db_from_cache()
+    create_db_from_scratch()
     print(champion_keys())
