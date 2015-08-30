@@ -49,7 +49,9 @@ class ItemSetBuilder:
 
     def generate(self):
         d = {
-            "title": "CB for " + self.__analyzer.championKey,
+            "title": "CB for {0} ({1} games)".format(
+                self.__analyzer.championKey,
+                self.__analyzer.gameCount),
             "type": "custom",
             "map": "SR",
             "mode": "CLASSIC",
