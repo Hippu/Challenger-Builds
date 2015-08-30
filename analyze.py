@@ -1,7 +1,6 @@
 import riot_api
 from data import (
-    engine, Champion, BoughtItems, Session, is_final_item,
-    get_item_set, ItemTags)
+    engine, Champion, BoughtItems, Session, is_final_item, ItemTags)
 from sqlalchemy.sql import select, func
 
 
@@ -124,7 +123,7 @@ class BuildAnalyzer:
             return self.__cache["offensive_items"]
 
         off = [x for x in self.items if x["item_id"]
-               in get_item_set(ItemTags.offensive)]
+               in ItemTags.get_item_set(ItemTags.offensive)]
 
         self.__cache.update({"offensive_items": off})
         return off
@@ -135,7 +134,7 @@ class BuildAnalyzer:
             return self.__cache["defensive_items"]
 
         items = [x for x in self.items if x["item_id"]
-                 in get_item_set(ItemTags.defensive)]
+                 in ItemTags.get_item_set(ItemTags.defensive)]
 
         self.__cache.update({"defensive_items": items})
         return items
@@ -159,7 +158,7 @@ class BuildAnalyzer:
             return self.__cache["consumables"]
 
         consumables = [x for x in self.items if x["item_id"]
-                       in get_item_set(ItemTags.consumable)]
+                       in ItemTags.get_item_set(ItemTags.consumable)]
 
         self.__cache.update({"consumables": consumables})
 
