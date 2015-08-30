@@ -1,8 +1,8 @@
 import requests
 import time
-import json
 from datetime import datetime, timedelta
 
+# Read the api key
 API_KEY = open('api_key', 'r').readline().rstrip()
 
 riot_api = requests.Session()
@@ -16,6 +16,7 @@ endTime = int(time.time()) * 1000
 
 
 def get_challenger_summoner_ids():
+    """ Get the summoner id's of players in challenger """
     challengers = riot_api.get(
         'https://euw.api.pvp.net/api/lol/euw/v2.5/league/challenger',
         params={"type": "RANKED_SOLO_5x5"}
@@ -30,6 +31,7 @@ def get_challenger_summoner_ids():
 
 
 def get_matches_from_summoner(summoner_id):
+    """ Download all the matches from a summoner in a certain timeframe """
     matches = riot_api.get(
         'https://euw.api.pvp.net/api/lol/euw/v2.2/matchlist/by-summoner/' +
         summoner_id,
@@ -53,6 +55,7 @@ def get_matches_from_summoner(summoner_id):
 
 
 def get_match_ids_from_challenger(summoner_ids):
+    """ Download the match id's from a list of summoner id's """
     match_ids = set()
     progress_string = "Retrieving matches from summoner {0} out of {1}"
 
@@ -66,6 +69,7 @@ def get_match_ids_from_challenger(summoner_ids):
 
 
 def get_match(match_id):
+    """ Download a match with this id """
     match = riot_api.get(
         'https://euw.api.pvp.net/api/lol/euw/v2.2/match/' + str(match_id),
         params={"includeTimeline": "true"}
@@ -78,6 +82,7 @@ def get_match(match_id):
 
 
 def get_champions():
+    """ Download the static champion data """
     champions = riot_api.get(
         'https://global.api.pvp.net/api/lol/static-data/euw/v1.2/champion',
         params={'dataById': True}
@@ -89,6 +94,7 @@ def get_champions():
 
 
 def get_items():
+    """ Download the static item data """
     items = riot_api.get(
         'https://global.api.pvp.net/api/lol/static-data/euw/v1.2/item',
         params={'itemListData': 'depth,into,tags'}
@@ -97,6 +103,7 @@ def get_items():
 
 
 def get_matches(match_ids):
+    """ Download all the match in the given id lists """
     matches = []
     for index, id in enumerate(match_ids):
         print(
