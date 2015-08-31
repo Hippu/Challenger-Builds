@@ -1,12 +1,11 @@
 from analyze import BuildAnalyzer
 from data import champion_keys
 import json
-import os
-import zipfile
 from pathlib import Path
 
 
 def rounded(num):
+    """ Round the number for item counts with weird logic """
     if num < 1.1:
         return 1
     elif num < 2:
@@ -97,17 +96,3 @@ def create_files():
                 ItemSetBuilder(BuildAnalyzer(key)).generate(),
                 f,
                 indent=2)
-
-
-def create_zipfile():
-    zf = zipfile.ZipFile('result.zip', mode='w', compression=zipfile.ZIP_LZMA)
-    for key in champion_keys():
-        fname = key + "/Recommended/" + key + ".json"
-        j = json.dumps(
-            ItemSetBuilder(BuildAnalyzer(key)).generate(),
-            indent=2)
-        zf.writestr(fname, j)
-    zf.close()
-
-if __name__ == "__main__":
-    create_zipfile()

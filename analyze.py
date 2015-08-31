@@ -1,39 +1,11 @@
-import riot_api
 from data import (
     engine, Champion, BoughtItems, Session, is_final_item, ItemTags)
 from sqlalchemy.sql import select, func
 
 
-def count_champions_in_match_set(matches):
-    result = {}
-    for match in matches:
-        champions = []
-        if "participants" in match:
-            for participant in match["participants"]:
-                champions.append(participant["championId"])
-            for champion in champions:
-                if champion in result:
-                    result[champion] += 1
-                else:
-                    result.update({champion: 1})
-    champions = riot_api.get_champions()["data"]
-    pretty_result = []
-    for key, value in result.items():
-        pretty_result.append((champions[str(key)]["key"], value))
-    pretty_result.sort(key=lambda x: x[1], reverse=True)
-    return pretty_result
-
-
-def get_matches_without_timelines(matches):
-    matches_without = 0
-    for match in matches:
-        if "timeline" not in match:
-            matches_without += 1
-
-    return matches_without
-
-
 class BuildAnalyzer:
+    """ A class for analyzing builds for a certain champion.
+        Initialize the class with the championKey """
     championKey = None
     gameCount = None
 

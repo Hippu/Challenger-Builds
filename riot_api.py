@@ -8,11 +8,16 @@ API_KEY = open('api_key', 'r').readline().rstrip()
 riot_api = requests.Session()
 riot_api.params.update({"api_key": API_KEY})
 
-beginTime = int((
-    datetime.utcfromtimestamp(
-        time.time()) - timedelta(days=1)).timestamp()) * 1000
-
 endTime = int(time.time()) * 1000
+
+
+def get_begin_time(days=1):
+    """ Gets a timestamp from X days before now """
+    beginTime = int((
+        datetime.utcfromtimestamp(
+            time.time()) - timedelta(days=days)).timestamp()) * 1000
+
+    return beginTime
 
 
 def get_challenger_summoner_ids():
@@ -30,14 +35,14 @@ def get_challenger_summoner_ids():
     return summoner_ids
 
 
-def get_matches_from_summoner(summoner_id):
+def get_matches_from_summoner(summoner_id, days=1):
     """ Download all the matches from a summoner in a certain timeframe """
     matches = riot_api.get(
         'https://euw.api.pvp.net/api/lol/euw/v2.2/matchlist/by-summoner/' +
         summoner_id,
         params={
             "type": "RANKED_SOLO_5x5",
-            "beginTime": beginTime,
+            "beginTime": get_begin_time(days),
             "endTime": endTime,
             "beginIndex": 0,
             "endIndex": 200
@@ -54,16 +59,16 @@ def get_matches_from_summoner(summoner_id):
         return []
 
 
-def get_match_ids_from_challenger(summoner_ids):
+def get_match_ids_from_challenger(summoner_ids, days=1):
     """ Download the match id's from a list of summoner id's """
     match_ids = set()
     progress_string = "Retrieving matches from summoner {0} out of {1}"
 
     for index, summoner_id in enumerate(summoner_ids, start=0):
         print(progress_string.format(index, len(summoner_ids)), end='\r')
-        for match in get_matches_from_summoner(summoner_id):
+        for match in get_matches_from_summoner(summoner_id, days):
             match_ids.add(match["matchId"])
-        time.sleep(1.2)
+        time.sleep(1.3)
 
     return match_ids
 
@@ -111,5 +116,5 @@ def get_matches(match_ids):
             end='\r'
         )
         matches.append(get_match(id))
-        time.sleep(1.2)
+        time.sleep(1.3)
     return matches

@@ -112,6 +112,17 @@ def match_loader(matches):
     conn.close()
 
 
+def get_match_ids_not_in_db(match_ids):
+    """ Compares the list of matchIds given as a argument
+        and returns the set are NOT already in the db """
+    q = select([Match.match_id])
+    with engine.connect() as conn:
+        result = conn.execute(q).fetchall()
+        result = set([match_id[0] for match_id in result])
+
+    return match_ids - result
+
+
 def champion_keys():
     """ Get champion keys from the champion data """
     keys = []
@@ -169,7 +180,7 @@ class ItemTags:
         "Consumable"
     }
 
-    def get_item_set(self, tag_set):
+    def get_item_set(tag_set):
         """ Get a set of items that have at least one of the tags
             in the set of tags that is given as argument """
         s = set()
@@ -181,6 +192,15 @@ class ItemTags:
                     s.add(item["id"])
 
         return s
+
+
+def update_database(days=1):
+    challenger_ids = riot_api.get_challenger_summoner_ids()
+    match_ids = riot_api.get_match_ids_from_challenger(
+        challenger_ids, days=days)
+    match_ids = get_match_ids_not_in_db(match_ids)
+    matches = riot_api.get_matches(match_ids)
+    match_loader(matches)
 
 
 def create_db_from_cache():
@@ -202,5 +222,11 @@ def create_db_from_scratch():
     match_loader(matches)
 
 if __name__ == "__main__":
-    create_db_from_scratch()
-    print(champion_keys())
+    # challenger_ids = riot_api.get_challenger_summoner_ids()
+    # match_ids = riot_api.get_match_ids_from_challenger(challenger_ids)
+    match_ids = pickle.load(open('macth_ids.cache', 'rb'))
+    match_ids = get_match_ids_not_in_db(match_ids)
+    matches = riot_api.get_matches(match_ids)
+    match_loader(matches)
+    # match_ids = riot_api.get_match_ids_from_challenger(challenger_ids)
+    # print(get_match_ids_not_in_db(match_ids))
