@@ -45,3 +45,6 @@ Temporary Items
 results/*
 __pycache__/*
 .vagrant/*
+target/*
+api_key
+data.db
