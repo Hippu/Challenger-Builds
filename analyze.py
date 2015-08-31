@@ -1,6 +1,7 @@
 from data import (
-    engine, Champion, BoughtItems, Session, is_final_item, ItemTags)
+    engine, Champion, BoughtItems, Match, Session, is_final_item, ItemTags)
 from sqlalchemy.sql import select, func
+from datetime import datetime, timedelta
 
 
 class BuildAnalyzer:
@@ -9,12 +10,13 @@ class BuildAnalyzer:
     championKey = None
     gameCount = None
 
-    def __init__(self, championKey=None):
+    def __init__(self, championKey=None, days=1):
         self.championKey = championKey
         if self.championKey is None:
             raise Exception("Champion key can't be None")
         self.gameCount = self.game_count()
         self.__cache = {}
+        self.days = days
 
     def game_count(self):
         s = Session()
@@ -37,10 +39,14 @@ class BuildAnalyzer:
             select_from(
                 Champion.__table__.join(
                     BoughtItems,
-                    onclause=Champion.match_id == BoughtItems.match_id)).\
+                    onclause=Champion.match_id == BoughtItems.match_id).join(
+                    Match)).\
             where(Champion.champion_key == self.championKey).\
             where(Champion.participant_id == BoughtItems.participant_id).\
-            where(BoughtItems.timestamp < 110 * 1000)
+            where(BoughtItems.timestamp < 110 * 1000).\
+            where(Match.created_on > (
+                datetime.utcnow() - timedelta(days=self.days))
+        )
 
         with engine.connect() as conn:
             items = []
@@ -70,10 +76,15 @@ class BuildAnalyzer:
             select_from(
                 Champion.__table__.join(
                     BoughtItems,
-                    onclause=Champion.match_id == BoughtItems.match_id)).\
+                    onclause=Champion.match_id == BoughtItems.match_id).join(
+                    Match
+                )).\
             where(Champion.champion_key == self.championKey).\
             where(Champion.participant_id == BoughtItems.participant_id).\
-            where(BoughtItems.timestamp > 110 * 1000)
+            where(BoughtItems.timestamp > 110 * 1000).\
+            where((Match.created_on > (
+                datetime.utcnow() - timedelta(days=self.days)
+            )))
 
         with engine.connect() as conn:
             items = []

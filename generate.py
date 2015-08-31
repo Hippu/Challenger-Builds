@@ -2,7 +2,7 @@ from datetime import datetime
 from analyze import BuildAnalyzer
 from item_set import ItemSetBuilder
 import zipfile
-from data import champion_keys, update_database
+from data import champion_keys, update_database, create_db_from_scratch
 import json
 import argparse
 
@@ -11,6 +11,17 @@ parser.add_argument(
     "days",
     help="The amount of days of games to analyze for the item sets",
     type=int
+)
+parser.add_argument(
+    "--no-download",
+    help="Don't use the api and only use the games that already exists \
+    in the database",
+    action="store_true"
+)
+parser.add_argument(
+    "--create-database",
+    help="Creates a new database and deletes the current one if it exists",
+    action="store_true"
 )
 args = parser.parse_args()
 
@@ -21,7 +32,8 @@ with open('templates/index.html', 'r') as f:
 def create_index(path):
     index = template.format(
         timestamp=datetime.utcnow(),
-        filename="item_set.zip")
+        filename="item_set.zip",
+        days=args.days)
     with open(path, mode='w') as f:
         f.write(index)
 
@@ -30,6 +42,7 @@ def create_zipfile(path):
     zf = zipfile.ZipFile(
         path, mode='w', compression=zipfile.ZIP_LZMA)
     for key in champion_keys():
+        print("Building items for " + key)
         fname = key + "/Recommended/" + key + ".json"
         j = json.dumps(
             ItemSetBuilder(BuildAnalyzer(key)).generate(),
@@ -38,7 +51,10 @@ def create_zipfile(path):
     zf.close()
 
 if __name__ == "__main__":
-    update_database(days=args.days)
+    if args.create_database:
+        create_db_from_scratch()
+    if not args.no_download:
+        update_database(days=args.days)
     path = 'target/'
     create_index(path + 'index.html')
     create_zipfile(path + 'item_set.zip')

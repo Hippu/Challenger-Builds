@@ -6,9 +6,10 @@ from sqlalchemy.sql import select
 from datetime import datetime, timedelta
 import riot_api
 import pickle
+import os
 
 # Set up sqlite3 with sqlalchemy
-engine = create_engine('sqlite:///data.db', echo=True)
+engine = create_engine('sqlite:///data.db')
 Base = declarative_base()
 Session = sessionmaker()
 Session.configure(bind=engine)
@@ -196,6 +197,8 @@ class ItemTags:
 
 def update_database(days=1):
     """ Updates the database with the latest games """
+    if not os.path.isfile('data.db'):
+        create_db_from_scratch()
     challenger_ids = riot_api.get_challenger_summoner_ids()
     match_ids = riot_api.get_match_ids_from_challenger(
         challenger_ids, days=days)
@@ -214,20 +217,7 @@ def create_db_from_cache():
 
 
 def create_db_from_scratch():
-    """ Creates the database from scratch
-        by downloading all the matches from the api """
-    challenger_ids = riot_api.get_challenger_summoner_ids()
-    match_ids = riot_api.get_match_ids_from_challenger(challenger_ids)
-    matches = riot_api.get_matches(match_ids)
+    """ Creates the database from scratch """
+    if os.path.isfile('data.db'):
+        os.remove('data.db')
     Base.metadata.create_all(engine)
-    match_loader(matches)
-
-if __name__ == "__main__":
-    # challenger_ids = riot_api.get_challenger_summoner_ids()
-    # match_ids = riot_api.get_match_ids_from_challenger(challenger_ids)
-    match_ids = pickle.load(open('macth_ids.cache', 'rb'))
-    match_ids = get_match_ids_not_in_db(match_ids)
-    matches = riot_api.get_matches(match_ids)
-    match_loader(matches)
-    # match_ids = riot_api.get_match_ids_from_challenger(challenger_ids)
-    # print(get_match_ids_not_in_db(match_ids))
