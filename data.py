@@ -195,6 +195,7 @@ class ItemTags:
 
 
 def update_database(days=1):
+    """ Updates the database with the latest games """
     challenger_ids = riot_api.get_challenger_summoner_ids()
     match_ids = riot_api.get_match_ids_from_challenger(
         challenger_ids, days=days)
