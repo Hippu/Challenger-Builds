@@ -79,7 +79,6 @@ def get_match_ids_from_challenger(summoner_ids, days=1):
         print(progress_string.format(index, len(summoner_ids)), end='\r')
         for match in get_matches_from_summoner(summoner_id, days):
             match_ids.add(match["matchId"])
-        print(conf.wait_time)
         time.sleep(conf.wait_time)
 
     return match_ids
