@@ -41,7 +41,7 @@ class Champion(Base):
     __tablename__ = 'champions'
 
     id = Column(Integer, primary_key=True)
-    match_id = Column(Integer, ForeignKey('matches.match_id'))
+    match_id = Column(Integer, ForeignKey('matches.match_id'), index=True)
     participant_id = Column(Integer)
     champion_key = Column(String)
     role = Column(String)
@@ -59,7 +59,7 @@ class BoughtItems(Base):
     __tablename__ = 'bought_items'
 
     id = Column(Integer, primary_key=True)
-    match_id = Column(Integer, ForeignKey('matches.match_id'))
+    match_id = Column(Integer, ForeignKey('matches.match_id'), index=True)
     item_id = Column(Integer)
     participant_id = Column(Integer)
     timestamp = Column(Integer)

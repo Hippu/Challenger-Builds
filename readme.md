@@ -52,4 +52,9 @@ and item data from the Riot Api.
     python generate.py --create-database 3
 
 Using --create-database deletes the existing database of matches and
-creates a new one from scratch
+creates a new one from scratch.
+
+    python generate.py --production 7
+
+Using --production removes the api throttling, if you have a production api key
+this makes the program go a lot faster.

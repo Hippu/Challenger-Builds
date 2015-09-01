@@ -2,13 +2,24 @@ import requests
 import time
 from datetime import datetime, timedelta
 
-# Read the api key
-API_KEY = open('api_key', 'r').readline().rstrip()
-
-riot_api = requests.Session()
-riot_api.params.update({"api_key": API_KEY})
 
 endTime = int(time.time()) * 1000
+
+
+class Config:
+    API_KEY = open('api_key', 'r').readline().rstrip()
+
+    def __init__(self):
+        self.wait_time = 1.3
+
+conf = Config()
+
+
+def get_config():
+    return conf
+
+riot_api = requests.Session()
+riot_api.params.update({"api_key": conf.API_KEY})
 
 
 def get_begin_time(days=1):
@@ -68,7 +79,8 @@ def get_match_ids_from_challenger(summoner_ids, days=1):
         print(progress_string.format(index, len(summoner_ids)), end='\r')
         for match in get_matches_from_summoner(summoner_id, days):
             match_ids.add(match["matchId"])
-        time.sleep(1.3)
+        print(conf.wait_time)
+        time.sleep(conf.wait_time)
 
     return match_ids
 
@@ -116,5 +128,5 @@ def get_matches(match_ids):
             end='\r'
         )
         matches.append(get_match(id))
-        time.sleep(1.3)
+        time.sleep(conf.wait_time)
     return matches

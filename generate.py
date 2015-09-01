@@ -8,6 +8,7 @@ import argparse
 from shutil import copytree, rmtree
 from os import mkdir
 from os.path import isdir
+from riot_api import get_config
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -24,6 +25,12 @@ parser.add_argument(
 parser.add_argument(
     "--create-database",
     help="Creates a new database and deletes the current one if it exists",
+    action="store_true"
+)
+parser.add_argument(
+    "--production",
+    help="Removes api throttling, only use if you have a production api key \
+    otherwise you are going to hit rate limits",
     action="store_true"
 )
 args = parser.parse_args()
@@ -58,6 +65,8 @@ def create_zipfile(path):
     zf.close()
 
 if __name__ == "__main__":
+    if args.production:
+        get_config().wait_time = 0.025
     if args.create_database:
         create_db_from_scratch()
     if not args.no_download:
