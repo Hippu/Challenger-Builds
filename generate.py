@@ -5,6 +5,9 @@ import zipfile
 from data import champion_keys, update_database, create_db_from_scratch
 import json
 import argparse
+from shutil import copytree, rmtree
+from os import mkdir
+from os.path import isdir
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -27,6 +30,10 @@ args = parser.parse_args()
 
 with open('templates/index.html', 'r') as f:
     template = f.read()
+
+
+def copy_static(path):
+    copytree("templates/static/", path + "static/")
 
 
 def create_index(path):
@@ -56,5 +63,10 @@ if __name__ == "__main__":
     if not args.no_download:
         update_database(days=args.days)
     path = 'target/'
+    # Clear the target directory
+    if isdir(path):
+        rmtree(path)
+    mkdir(path)
+    copy_static(path)
     create_index(path + 'index.html')
     create_zipfile(path + 'item_set.zip')

@@ -2,17 +2,40 @@
 <html>
   <head>
     <title>Challenger Builds</title>
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/css/bootstrap-theme.min.css" rel="stylesheet">
   </head>
   <body>
-    <h1>Item sets based on EUW challenger builds</h1>
-    <p>
-      Generated on {timestamp} UTC and based on games from the last {days} days.
-    </p>
-    <a href="{filename}"><button>Download</button></a>
-    <h2>How to use</h2>
-      <p>
-        Download the zip file and copy its contents to
-        "League of Legends/Config/Champions" folder.
-      </p>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+        <h1>Item sets based on EUW challenger builds</h1>
+        <p>
+          Automatically generated item sets for the shop based on real builds
+          used by current Challenger players in their recent games
+        </p>
+        <p>
+          Items are ordered by their popularity
+        </p>
+        <p>
+          Consumable items show the average amount that they are purchased
+          in a game
+        </p>
+        <img src="static/img/shop.jpg" class="img-responsive">
+        <p>
+          Generated on {timestamp} UTC and based on games from the last {days} days.
+        </p>
+        <a href="{filename}">
+          <button class="btn btn-primary btn-lg">Download</button>
+        </a>
+        <h2>How to use</h2>
+          <p>
+            Download the zip file and copy its contents to
+            "League of Legends/Config/Champions" folder.
+          </p>
+          <img src="static/img/howto.jpg" class="img-responsive">
+        </div>
+      </div>
+    </div>
   </body>
 </html>
