@@ -52,7 +52,7 @@ def create_zipfile(path):
         print("Building items for " + key)
         fname = key + "/Recommended/" + key + ".json"
         j = json.dumps(
-            ItemSetBuilder(BuildAnalyzer(key)).generate(),
+            ItemSetBuilder(BuildAnalyzer(key, args.days)).generate(),
             indent=2)
         zf.writestr(fname, j)
     zf.close()

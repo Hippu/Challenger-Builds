@@ -20,9 +20,9 @@ class BuildAnalyzer:
 
     def game_count(self):
         s = Session()
-        gameCount = s.query(Champion, Match).\
+        gameCount = s.query(Champion).\
+            join(Match, Champion.match_id == Match.match_id).\
             filter(Champion.champion_key == self.championKey).\
-            filter(Champion.match_id == Match.match_id).\
             filter(Match.created_on > (
                 datetime.utcnow() - timedelta(days=self.days))).count()
 
