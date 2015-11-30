@@ -2,7 +2,9 @@ from data import (
     engine, Champion, BoughtItems, Match, Session, is_final_item, ItemTags)
 from sqlalchemy.sql import select, func
 from datetime import datetime, timedelta
+from riot_api import CurrentVersion
 
+current_version = CurrentVersion().like_statement()
 
 class BuildAnalyzer:
     """ A class for analyzing builds for a certain champion.
@@ -48,6 +50,7 @@ class BuildAnalyzer:
             where(Champion.champion_key == self.championKey).\
             where(Champion.participant_id == BoughtItems.participant_id).\
             where(BoughtItems.timestamp < 110 * 1000).\
+            where(Match.version.like(current_version)).\
             where(Match.created_on > (
                 datetime.utcnow() - timedelta(days=self.days))
         )
@@ -86,6 +89,7 @@ class BuildAnalyzer:
             where(Champion.champion_key == self.championKey).\
             where(Champion.participant_id == BoughtItems.participant_id).\
             where(BoughtItems.timestamp > 110 * 1000).\
+            where(Match.version.like(current_version)).\
             where((Match.created_on > (
                 datetime.utcnow() - timedelta(days=self.days)
             )))

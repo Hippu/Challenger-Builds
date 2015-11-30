@@ -28,6 +28,7 @@ class Match(Base):
     region = Column(String)
     created_on = Column(DateTime)
     duration = Column(Interval)
+    version = Column(String, index=True)
     items_bought = relationship("BoughtItems")
 
     def __repr__(self):
@@ -86,7 +87,8 @@ def match_loader(matches):
             region=match["region"],
             created_on=datetime.utcfromtimestamp(
                 int(match["matchCreation"] / 1000)),
-            duration=timedelta(seconds=match["matchDuration"])
+            duration=timedelta(seconds=match["matchDuration"]),
+            version=match["matchVersion"]
         ))
         for participant in match["participants"]:
             new_participants.append({

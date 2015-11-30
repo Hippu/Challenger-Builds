@@ -22,6 +22,26 @@ riot_api = requests.Session()
 riot_api.params.update({"api_key": conf.API_KEY})
 
 
+class CurrentVersion:
+    season = None
+    major = None
+    minor = None
+
+    def __init__(self):
+        version = riot_api.get(
+            'https://global.api.pvp.net/api/lol/static-data/euw/v1.2/versions'
+        )
+        version = version.json()[0]
+        self.season, self.major, self.minor = version.split(".")
+
+    def __str__(self):
+        return "{}.{}.{}".format(self.season, self.major, self.minor)
+
+    def like_statement(self):
+        """ Version for sql statement """
+        return "{}.{}%".format(self.season, self.major)
+
+
 def get_begin_time(days=1):
     """ Gets a timestamp from X days before now """
     beginTime = int((
